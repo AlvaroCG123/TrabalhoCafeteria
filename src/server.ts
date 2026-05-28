@@ -1,21 +1,20 @@
 import express from 'express';
-import { clienteRoutes } from './routes/cliente.routes';
-import { produtoRoutes } from './routes/produto.routes';
-import { recargaRoutes } from './routes/recarga.routes';
-import { vendaRoutes } from './routes/venda.routes';
+import { alunoRoutes } from './routes/aluno.routes';
+import { livroRoutes } from './routes/livro.routes';
+import { depositoRoutes } from './routes/deposito.routes';
+import { emprestimoRoutes } from './routes/emprestimo.routes';
 
 const app = express();
 
 app.use(express.json());
 
-// Registrando as rotas modulares na API
-app.use(clienteRoutes);
-app.use(produtoRoutes);
-app.use(recargaRoutes);
-app.use(vendaRoutes);
+app.use(alunoRoutes);
+app.use(livroRoutes);
+app.use(depositoRoutes);
+app.use(emprestimoRoutes);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(` Servidor da Cafeteria rodando na porta ${PORT}`);
+  console.log(`Servidor da Biblioteca rodando perfeitamente na porta ${PORT}`);
 });
