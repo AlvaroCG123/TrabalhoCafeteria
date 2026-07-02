@@ -11,12 +11,19 @@ datasource db {
   provider = "mysql"
 }
 
+enum UsuarioStatus {
+  INATIVO
+  ATIVO
+}
+
 model Livro {
   id          Int          @id @default(autoincrement())
   titulo      String
   autor       String
   quant       Int          // Estoque de livros disponíveis na estante
   preco_multa Float        // Valor cobrado por dia de atraso na devolução
+  deleted     Boolean      @default(false)
+  deletedAt   DateTime?
   emprestimos Emprestimo[]
 
   @@map("livros")
@@ -56,4 +63,35 @@ model Deposito {
   aluno     Aluno    @relation(fields: [alunoId], references: [id], onDelete: Cascade)
 
   @@map("depositos")
+}
+
+model Usuario {
+  id                     Int            @id @default(autoincrement())
+  nome                   String
+  email                  String         @unique
+  senha                  String
+  status                 UsuarioStatus  @default(INATIVO)
+  nivelAcesso            Int            @default(1)
+  codigoAtivacao         Int            @unique
+  ultimoLogin            DateTime?
+  codigoRecuperacao      String?
+  codigoRecuperacaoExpira DateTime?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  logs                   Log[]
+
+  @@map("usuarios")
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  acao      String
+  detalhe   String?
+  sucesso   Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("logs")
 }

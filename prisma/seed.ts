@@ -1,20 +1,38 @@
-import path from 'path';
-import dotenv from 'dotenv';
 import { prisma } from '../lib/prisma';
-
-// Garante o carregamento correto das credenciais do MariaDB antes de invocar o prisma
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
-
-
+import { gerarHashSenha } from '../src/utils/security';
 
 async function main() {
   console.log('Iniciando o seed da Biblioteca (MariaDB/MySQL)...');
 
   // Limpa dados anteriores
+  await prisma.log.deleteMany();
+  await prisma.usuario.deleteMany();
   await prisma.emprestimo.deleteMany();
   await prisma.deposito.deleteMany();
   await prisma.livro.deleteMany();
   await prisma.aluno.deleteMany();
+
+  const usuarioAdmin = await prisma.usuario.create({
+    data: {
+      nome: 'Administrador',
+      email: 'admin@biblioteca.com',
+      senha: gerarHashSenha('Admin@123'),
+      status: 'ATIVO',
+      nivelAcesso: 3,
+      codigoAtivacao: 111111,
+    }
+  });
+
+  await prisma.usuario.create({
+    data: {
+      nome: 'Usuario Teste',
+      email: 'teste@biblioteca.com',
+      senha: gerarHashSenha('Teste@123'),
+      status: 'INATIVO',
+      nivelAcesso: 1,
+      codigoAtivacao: 222222,
+    }
+  });
 
 
   const aluno1 = await prisma.aluno.create({
@@ -44,7 +62,7 @@ async function main() {
     data: { alunoId: aluno1.id, livroId: livro1.id, quant: 1 }
   });
 
-  console.log('Seed da Biblioteca executado com sucesso!');
+  console.log(`Seed da Biblioteca executado com sucesso! Usuario admin: ${usuarioAdmin.email}`);
 }
 
 main()

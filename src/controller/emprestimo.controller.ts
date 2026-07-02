@@ -12,7 +12,7 @@ export class EmprestimoController {
       const livroIdCorreto = livroId || (req.body as any).livroId;
 
       const resultado = await prisma.$transaction(async (tx) => {
-        const livro = await tx.livro.findUnique({ where: { id: livroIdCorreto } });
+        const livro = await tx.livro.findFirst({ where: { id: livroIdCorreto, deleted: false } });
         if (!livro || livro.quant < quant) {
           throw new Error('Livro indisponível no acervo ou estoque insuficiente.');
         }
